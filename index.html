@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6d4aff">
+<title>HostelMate AI — Smarter Hostels, Happier Students</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --p:#6d4aff;--p2:#a855f7;--p3:#22d3ee;
+ --bg:#f5f3ff;--bg2:#ffffff;--tx:#17143a;--mu:#6e6a94;--bd:rgba(109,74,255,.14);
+ --glass:rgba(255,255,255,.65);--sh:0 10px 40px rgba(109,74,255,.12);
+ --ok:#16a34a;--warn:#f59e0b;--bad:#ef4444;
+ --grad:linear-gradient(135deg,#6d4aff,#a855f7 55%,#ec4899);
+}
+[data-theme=dark]{
+ --bg:#0c0a1f;--bg2:#15122e;--tx:#f1efff;--mu:#9d99c7;--bd:rgba(168,150,255,.16);
+ --glass:rgba(28,24,60,.65);--sh:0 10px 40px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.55;overflow-x:hidden;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+.hide{display:none!important}
+.wrap{max-width:1180px;margin:auto;padding:0 22px}
+
+/* buttons */
+.btn{background:var(--grad);color:#fff;padding:13px 24px;border-radius:14px;font-weight:700;box-shadow:0 8px 24px rgba(109,74,255,.35);transition:.25s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(109,74,255,.5)}
+.btn.ghost{background:var(--glass);color:var(--tx);border:1px solid var(--bd);box-shadow:none;backdrop-filter:blur(10px)}
+.btn.sm{padding:8px 14px;font-size:13px;border-radius:10px}
+.btn.ok{background:var(--ok);box-shadow:none}.btn.bad{background:var(--bad);box-shadow:none}
+.icon-btn{width:42px;height:42px;border-radius:12px;background:var(--glass);border:1px solid var(--bd);font-size:18px;backdrop-filter:blur(10px)}
+
+/* background blobs */
+.blobs{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.45;animation:float 14s ease-in-out infinite}
+.b1{width:480px;height:480px;background:#8b5cf6;top:-120px;left:-100px}
+.b2{width:420px;height:420px;background:#22d3ee;top:30%;right:-120px;animation-delay:-5s;opacity:.3}
+.b3{width:380px;height:380px;background:#ec4899;bottom:-120px;left:30%;animation-delay:-9s;opacity:.28}
+[data-theme=dark] .blob{opacity:.28}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-50px) scale(1.12)}}
+
+/* nav */
+.nav{position:sticky;top:12px;z-index:30;margin-top:12px}
+.nav .in{display:flex;justify-content:space-between;align-items:center;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--bd);border-radius:20px;padding:10px 14px 10px 20px;box-shadow:var(--sh)}
+.logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:10px}
+.logo i{font-style:normal;background:var(--grad);width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:18px}
+.logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.links{display:flex;gap:26px;font-weight:600;font-size:15px;color:var(--mu)}
+.links a:hover{color:var(--p)}
+.nr{display:flex;gap:10px;align-items:center}
+@media(max-width:760px){.links{display:none}.nr .ghost.hide-m{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:70px 0 40px}
+.pill{display:inline-flex;gap:8px;align-items:center;background:var(--glass);border:1px solid var(--bd);padding:7px 16px;border-radius:99px;font-size:13px;font-weight:700;color:var(--p);backdrop-filter:blur(10px)}
+.pill .dot{width:8px;height:8px;background:var(--ok);border-radius:50%;box-shadow:0 0 0 4px rgba(22,163,74,.2);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(22,163,74,0)}}
+h1{font-size:clamp(40px,6.5vw,72px);line-height:1.04;letter-spacing:-.03em;margin:20px 0;font-weight:800}
+.gt{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{font-size:19px;color:var(--mu);max-width:520px;margin-bottom:30px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.trust{display:flex;align-items:center;gap:14px;margin-top:34px;color:var(--mu);font-size:14px}
+.avs{display:flex}.avs span{width:38px;height:38px;border-radius:50%;border:3px solid var(--bg);margin-left:-10px;display:grid;place-items:center;font-size:18px;background:var(--bg2)}
+.avs span:first-child{margin-left:0}
+.stage{position:relative;height:460px}
+.phone{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:270px;background:var(--bg2);border:1px solid var(--bd);border-radius:36px;padding:18px;box-shadow:0 30px 80px rgba(109,74,255,.3);animation:bob 6s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,-54%)}}
+.phone .bar{height:6px;width:70px;background:var(--bd);border-radius:9px;margin:0 auto 16px}
+.ph-h{font-weight:800;font-size:18px;margin-bottom:12px}
+.ph-c{background:var(--bg);border-radius:16px;padding:12px;margin-bottom:10px;font-size:13px;display:flex;gap:10px;align-items:center}
+.ph-c em{font-style:normal;font-size:22px}
+.ph-c small{display:block;color:var(--mu)}
+.fl{position:absolute;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:18px;padding:12px 16px;font-size:13px;font-weight:700;box-shadow:var(--sh);display:flex;gap:10px;align-items:center;animation:bob2 5s ease-in-out infinite}
+.fl small{display:block;font-weight:500;color:var(--mu)}
+.fl .e{font-size:24px}
+.f1{top:30px;left:-10px}.f2{bottom:60px;right:-6px;animation-delay:-2s}.f3{top:170px;right:-20px;animation-delay:-3.5s}
+@keyframes bob2{50%{transform:translateY(-14px)}}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:40px}.stage{height:420px}.f1{left:0}.f3{display:none}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:30px 0}
+.st{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:22px;padding:22px;text-align:center;box-shadow:var(--sh)}
+.st b{font-size:38px;font-weight:800;display:block}
+.st span{color:var(--mu);font-size:14px;font-weight:600}
+
+/* sections */
+.sec{padding:70px 0}
+.head{text-align:center;max-width:640px;margin:0 auto 44px}
+h2{font-size:clamp(30px,4.5vw,46px);letter-spacing:-.02em;line-height:1.1;margin:14px 0;font-weight:800}
+.head p{color:var(--mu);font-size:17px}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.bc{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:26px;padding:28px;box-shadow:var(--sh);transition:.3s;position:relative;overflow:hidden}
+.bc:hover{transform:translateY(-6px);border-color:var(--p)}
+.bc:nth-child(1){grid-column:span 3}.bc:nth-child(2){grid-column:span 3}.bc:nth-child(3){grid-column:span 3}.bc:nth-child(4){grid-column:span 3}
+.bc .ico{width:56px;height:56px;border-radius:18px;background:var(--grad);display:grid;place-items:center;font-size:28px;margin-bottom:18px;box-shadow:0 10px 24px rgba(109,74,255,.35)}
+.bc small{color:var(--p);font-weight:800;letter-spacing:.08em;font-size:12px}
+.bc h3{font-size:24px;margin:6px 0 8px}
+.bc p{color:var(--mu)}
+.mini{margin-top:18px;background:var(--bg);border-radius:14px;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.tg{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:800}
+@media(max-width:760px){.bc:nth-child(n){grid-column:span 6}}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;position:relative}
+.step{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:24px;padding:28px;box-shadow:var(--sh)}
+.step .n{width:46px;height:46px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:16px}
+.step h3{margin-bottom:6px}.step p{color:var(--mu);font-size:15px}
+.testi{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.tc{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:24px;padding:26px;box-shadow:var(--sh)}
+.tc .s{color:#f59e0b;letter-spacing:2px;margin-bottom:10px}
+.tc p{color:var(--mu);margin-bottom:16px}
+.tc .u{display:flex;gap:12px;align-items:center;font-weight:700;font-size:14px}
+.tc .u span{width:40px;height:40px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:20px}
+.tc .u small{display:block;color:var(--mu);font-weight:500}
+.final{background:var(--grad);border-radius:36px;padding:70px 30px;text-align:center;color:#fff;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(109,74,255,.4)}
+.final h2{color:#fff}.final p{opacity:.9;margin-bottom:26px;font-size:18px}
+.final .btn{background:#fff;color:var(--p);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.final::before,.final::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.12)}
+.final::before{top:-120px;left:-80px}.final::after{bottom:-140px;right:-60px}
+footer{text-align:center;padding:40px 0;color:var(--mu);font-size:14px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(34px);transition:.8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,6,40,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;animation:fade .25s}
+@keyframes fade{from{opacity:0}}
+.box{background:var(--bg2);border:1px solid var(--bd);border-radius:28px;padding:32px;max-width:440px;width:100%;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.4);animation:pop .35s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{transform:scale(.88);opacity:0}}
+.x{position:absolute;right:16px;top:14px;background:none;font-size:28px;color:var(--mu)}
+.box h2{font-size:28px;margin:10px 0 4px}
+.box .sub{color:var(--mu);font-size:14px;margin-bottom:8px}
+.role{display:flex;gap:16px;align-items:center;width:100%;text-align:left;background:var(--bg);border:2px solid var(--bd);border-radius:20px;padding:16px;margin-top:14px;transition:.25s}
+.role:hover{border-color:var(--p);transform:translateX(6px)}
+.role .re{width:54px;height:54px;border-radius:16px;background:var(--grad);display:grid;place-items:center;font-size:26px}
+.role small{display:block;color:var(--mu)}
+label{font-size:13px;font-weight:700;color:var(--mu)}
+input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--bd);border-radius:12px;font:inherit;margin:6px 0 14px;background:var(--bg);color:var(--tx);transition:.2s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--p);box-shadow:0 0 0 4px rgba(109,74,255,.15)}
+
+/* app layout */
+.side{position:fixed;left:14px;top:14px;bottom:14px;width:250px;background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--bd);border-radius:28px;padding:22px 16px;display:flex;flex-direction:column;box-shadow:var(--sh);z-index:20}
+.side .logo{padding:0 8px 22px}
+.nv{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:16px;font-weight:700;color:var(--mu);margin-bottom:6px;background:none;width:100%;text-align:left;transition:.2s}
+.nv:hover{background:var(--bg);color:var(--tx)}
+.nv.on{background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(109,74,255,.4)}
+.nv span{font-size:19px}
+.me{margin-top:auto;background:var(--bg);border-radius:20px;padding:14px;display:flex;gap:12px;align-items:center}
+.me .av{width:44px;height:44px;border-radius:14px;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px}
+.me b{display:block;font-size:14px;line-height:1.2}.me small{color:var(--mu);font-size:12px}
+.main{margin-left:280px;padding:22px 24px 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:12px;flex-wrap:wrap}
+.topbar h2{font-size:30px;margin:0}.topbar p{color:var(--mu);font-size:14px}
+.tr{display:flex;gap:10px;align-items:center}
+@media(max-width:900px){
+ .side{top:auto;left:10px;right:10px;bottom:10px;width:auto;flex-direction:row;padding:8px;border-radius:24px}
+ .side .logo,.side .me,.nv b{display:none}
+ .side nav{display:flex;width:100%;justify-content:space-around}
+ .nv{flex-direction:column;gap:2px;padding:8px 10px;font-size:11px;margin:0;width:auto;text-align:center}
+ .nv b{display:block;font-size:11px}
+ .main{margin-left:0;padding:16px 14px 110px}
+}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px}
+.sc{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:24px;padding:22px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:.3s}
+.sc:hover{transform:translateY(-5px)}
+.sc .si{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:14px;background:var(--grad)}
+.sc b{font-size:34px;font-weight:800;display:block;line-height:1}
+.sc span{color:var(--mu);font-size:14px;font-weight:600}
+.panel{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:26px;padding:24px;box-shadow:var(--sh);margin-bottom:20px}
+.panel h3{margin-bottom:14px;font-size:19px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start}
+.eq{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+@media(max-width:1000px){.two{grid-template-columns:1fr}}
+.item{background:var(--bg);border:1px solid var(--bd);border-radius:18px;padding:16px;margin-bottom:12px;transition:.25s;animation:pop .4s}
+.item:hover{border-color:var(--p)}
+.row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.item p{color:var(--mu);font-size:14px;margin-top:5px}
+.badge{font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px;background:rgba(109,74,255,.15);color:var(--p);margin-left:4px;display:inline-block}
+.badge.High,.badge.Rejected{background:rgba(239,68,68,.15);color:var(--bad)}
+.badge.Medium,.badge.Pending,.badge.In\ Progress{background:rgba(245,158,11,.16);color:#d97706}
+.badge.Low,.badge.Resolved,.badge.Approved{background:rgba(22,163,74,.15);color:var(--ok)}
+.badge.Open{background:rgba(59,130,246,.15);color:#3b82f6}
+.empty{text-align:center;color:var(--mu);padding:30px}
+.empty em{font-size:40px;display:block;font-style:normal;margin-bottom:6px}
+.bar{margin-bottom:14px}
+.bar .bl{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px}
+.bar .bt{height:10px;background:var(--bg);border-radius:9px;overflow:hidden}
+.bar .bf{height:100%;background:var(--grad);border-radius:9px;transition:width 1s cubic-bezier(.2,.8,.2,1);width:0}
+.donutwrap{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.donut{width:140px;height:140px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.donut div{width:90px;height:90px;background:var(--bg2);border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px}
+.leg div{font-size:13px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.leg i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.meal{display:flex;gap:16px;align-items:center;padding:16px;background:var(--bg);border-radius:20px;margin-bottom:14px;border:1px solid var(--bd)}
+.meal .me2{font-size:40px}
+.meal .mi{flex:1}.meal .mi p{color:var(--mu);font-size:14px}.meal small{color:var(--mu)}
+.stars{display:flex}.stars button{background:none;font-size:24px;color:#cbd5e1;transition:.15s;padding:0 1px}
+.stars button.on{color:#f59e0b}.stars button:hover{transform:scale(1.3)}
+.hint{display:flex;gap:10px;align-items:center;font-size:13px;background:rgba(109,74,255,.1);color:var(--p);padding:10px 14px;border-radius:12px;font-weight:600;margin-bottom:14px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:13px 22px;border-radius:14px;z-index:300;font-weight:700;box-shadow:0 14px 40px rgba(0,0,0,.35);animation:drop .4s}
+@keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
+
+/* chat */
+.fab{position:fixed;right:22px;bottom:22px;width:62px;height:62px;border-radius:50%;background:var(--grad);color:#fff;font-size:28px;box-shadow:0 14px 34px rgba(109,74,255,.5);z-index:60;animation:bob2 3s infinite}
+@media(max-width:900px){.fab{bottom:100px;right:14px;width:54px;height:54px}}
+.chat{position:fixed;right:22px;bottom:96px;width:350px;max-width:calc(100vw - 28px);height:480px;max-height:70vh;background:var(--bg2);border:1px solid var(--bd);border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.35);display:flex;flex-direction:column;z-index:60;overflow:hidden;animation:pop .3s}
+@media(max-width:900px){.chat{bottom:165px;right:14px}}
+.ch{background:var(--grad);color:#fff;padding:16px 18px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.ch small{display:block;font-weight:500;opacity:.85}
+.cb{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14px;white-space:pre-line}
+.m.bot{background:var(--bg);align-self:flex-start;border-bottom-left-radius:4px}
+.m.me{background:var(--grad);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.cq{display:flex;gap:6px;padding:0 12px 8px;flex-wrap:wrap}
+.cq button{background:var(--bg);border:1px solid var(--bd);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--p)}
+.ci{display:flex;gap:8px;padding:12px;border-top:1px solid var(--bd)}
+.ci input{margin:0}.ci button{background:var(--grad);color:#fff;border-radius:12px;padding:0 16px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<!-- ================= LANDING ================= -->
+<div id="landing">
+ <div class="wrap">
+  <div class="nav"><div class="in">
+   <div class="logo"><i>⌂</i>HostelMate <b>AI</b></div>
+   <div class="links"><a href="#features">Features</a><a href="#how">How it works</a><a href="#loved">Reviews</a></div>
+   <div class="nr">
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">🌓</button>
+    <button class="btn ghost sm hide-m" onclick="openLogin()">Log in</button>
+    <button class="btn sm" onclick="openLogin()">Launch app ↗</button>
+   </div>
+  </div></div>
+
+  <section class="hero">
+   <div>
+    <span class="pill"><span class="dot"></span>THE SMARTER WAY TO LIVE ON CAMPUS</span>
+    <h1>Smarter hostels.<br><span class="gt">Happier students.</span></h1>
+    <p class="lead">A little less chaos, a lot more campus life. Manage complaints, discover the mess menu, request leave and stay in the loop — all in one beautiful place.</p>
+    <div class="cta">
+     <button class="btn" onclick="openLogin()">Explore your dashboard →</button>
+     <a href="#features" class="btn ghost">See what you can do ↓</a>
+    </div>
+    <div class="trust"><div class="avs"><span>👩🏽</span><span>👨🏻</span><span>👩🏻</span><span>🧑🏾</span></div><div><b style="color:var(--tx)">Made for hostel life</b><br>Students + wardens, finally in sync</div></div>
+   </div>
+   <div class="stage">
+    <div class="phone">
+     <div class="bar"></div>
+     <div class="ph-h">Hostel Home 🏠</div>
+     <div class="ph-c"><em>🛠️</em><div><b>Wi-Fi in Block B</b><small>AI: Connectivity</small></div></div>
+     <div class="ph-c"><em>🍛</em><div><b>Today's menu</b><small>Lunch · 12:30 PM</small></div></div>
+     <div class="ph-c"><em>🧳</em><div><b>Weekend leave</b><small>Request sent</small></div></div>
+     <div class="ph-c"><em>📢</em><div><b>Water maintenance</b><small>Tomorrow 10 AM</small></div></div>
+    </div>
+    <div class="fl f1"><span class="e">✨</span><div>AI sorted it<small>Wi-Fi complaint · High priority</small></div></div>
+    <div class="fl f2"><span class="e">✅</span><div>Leave approved!<small>Have a safe trip home</small></div></div>
+    <div class="fl f3"><span class="e">⭐</span><div>4.8 mess rating<small>This week</small></div></div>
+   </div>
+  </section>
+
+  <div class="stats rv">
+   <div class="st"><b data-c="2400" data-s="+">0</b><span>Students helped</span></div>
+   <div class="st"><b data-c="98" data-s="%">0</b><span>Issues resolved</span></div>
+   <div class="st"><b data-c="12" data-s="s">0</b><span>Avg. report time</span></div>
+   <div class="st"><b data-c="4.9" data-s="★">0</b><span>Student rating</span></div>
+  </div>
+
+  <section class="sec" id="features">
+   <div class="head rv"><span class="pill">YOUR HOSTEL, ORGANIZED</span><h2>Everything hostel life needs. <span class="gt">Nothing it doesn't.</span></h2><p>Simple tools for the everyday things that make a big difference.</p></div>
+   <div class="bento">
+    <div class="bc rv"><div class="ico">🛠️</div><small>01 / FIX IT</small><h3>Complaints, meet clarity.</h3><p>Report an issue in seconds. AI labels the category and suggests a priority so the right person can act faster.</p><div class="mini"><span>Wi-Fi in Block B · Connectivity</span><span class="tg" style="background:rgba(239,68,68,.15);color:#ef4444">High</span></div></div>
+    <div class="bc rv"><div class="ico">🍛</div><small>02 / EAT WELL</small><h3>Know what's cooking.</h3><p>Check today's menu, rate meals, and turn honest feedback into better mess decisions.</p><div class="mini"><span>Breakfast · Lunch · Dinner</span><span>🥞🍛🥗</span></div></div>
+    <div class="bc rv"><div class="ico">🧳</div><small>03 / GO PLACES</small><h3>Leave without the paperwork.</h3><p>Send leave requests digitally and keep an eye on approval status without chasing anyone.</p><div class="mini"><span>Weekend leave</span><span class="tg" style="background:rgba(245,158,11,.16);color:#d97706">Pending</span></div></div>
+    <div class="bc rv"><div class="ico">📢</div><small>04 / STAY IN THE LOOP</small><h3>One place for the important stuff.</h3><p>Read hostel notices, event updates and maintenance alerts before they get lost in a group chat.</p><div class="mini"><span>Water maintenance</span><span>Tomorrow →</span></div></div>
+   </div>
+  </section>
+
+  <section class="sec" id="how">
+   <div class="head rv"><span class="pill">LESS BACK-AND-FORTH</span><h2>From “who do I tell?” to <span class="gt">“already handled.”</span></h2></div>
+   <div class="steps">
+    <div class="step rv"><div class="n">1</div><h3>Tell us what's up</h3><p>Choose a feature and share the details in a simple form.</p></div>
+    <div class="step rv"><div class="n">2</div><h3>Let the smart bits help</h3><p>Complaint text is categorized and prioritized by built-in AI logic.</p></div>
+    <div class="step rv"><div class="n">3</div><h3>Track it, don't chase it</h3><p>See all your requests and updates in one dashboard.</p></div>
+   </div>
+  </section>
+
+  <section class="sec" id="loved">
+   <div class="head rv"><span class="pill">LOVED ON CAMPUS</span><h2>Students and wardens <span class="gt">love it</span></h2></div>
+   <div class="testi">
+    <div class="tc rv"><div class="s">★★★★★</div><p>“I reported a broken fan and it was fixed the same day. No more chasing the warden!”</p><div class="u"><span>🧑🏾‍🎓</span><div>Rohan K.<small>2nd year, Block A</small></div></div></div>
+    <div class="tc rv"><div class="s">★★★★★</div><p>“Leave approvals used to take days. Now it takes one tap. Honestly life changing.”</p><div class="u"><span>👩🏽‍🎓</span><div>Meera S.<small>3rd year, Block C</small></div></div></div>
+    <div class="tc rv"><div class="s">★★★★★</div><p>“Priority sorting helps me handle urgent issues first. My day is calmer now.”</p><div class="u"><span>🛡️</span><div>Mr. Verma<small>Hostel Warden</small></div></div></div>
+   </div>
+  </section>
+
+  <section class="sec">
+   <div class="final rv"><h2>Good hostel days start with better little systems.</h2><p>Meet your new hostel sidekick.</p><button class="btn" onclick="openLogin()">Open HostelMate AI ↗</button></div>
+  </section>
+  <footer>⌂ HostelMate AI · Made for better hostel days ♥ · Demo project · Frontend only</footer>
+ </div>
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div class="modal hide" id="loginModal" onclick="if(event.target===this)closeLogin()">
+ <div class="box">
+  <button class="x" onclick="closeLogin()">×</button>
+  <div id="pick">
+   <span class="pill">WELCOME TO YOUR HOSTEL HUB</span>
+   <h2>Who's logging in?</h2>
+   <p class="sub">Pick your portal. Students and wardens each get their own dashboard.</p>
+   <button class="role" onclick="pickRole('student')"><div class="re">🎓</div><div><b>Student</b><small>Complaints, leave, mess menu & more</small></div></button>
+   <button class="role" onclick="pickRole('warden')"><div class="re">🛡️</div><div><b>Warden</b><small>Manage complaints, leave & announcements</small></div></button>
+   <p style="font-size:12px;color:var(--mu);margin-top:16px;text-align:center">Demo mode · Data stays in this browser</p>
+  </div>
+  <div id="form" class="hide">
+   <h2 id="ft"></h2><p class="sub">Enter any details to continue (demo).</p>
+   <label>Full name</label><input id="lname" placeholder="e.g. Aarav Sharma">
+   <label>ID</label><input id="lid" placeholder="e.g. 21CS045">
+   <label id="rl">Room number</label><input id="lroom" placeholder="e.g. B-204">
+   <button class="btn" style="width:100%;justify-content:center" onclick="doLogin()">Log in →</button>
+   <button class="btn ghost" style="width:100%;justify-content:center;margin-top:10px" onclick="backPick()">← Back</button>
+  </div>
+ </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hide">
+ <aside class="side">
+  <div class="logo"><i>⌂</i>HostelMate <b>AI</b></div>
+  <nav id="nav"></nav>
+  <div class="me"><div class="av" id="av">A</div><div><b id="mn">Name</b><small id="mr">Student</small></div></div>
+ </aside>
+ <main class="main">
+  <div class="topbar">
+   <div><h2 id="pt">Dashboard</h2><p id="ps"></p></div>
+   <div class="tr"><button class="icon-btn" onclick="toggleTheme()">🌓</button><button class="btn ghost sm" onclick="logout()">Log out</button></div>
+  </div>
+  <div id="view"></div>
+ </main>
+ <button class="fab" onclick="toggleChat()">💬</button>
+ <div class="chat hide" id="chat">
+  <div class="ch"><div>HostelMate Assistant<small>● Online · ask me anything</small></div><button class="x" style="position:static;color:#fff" onclick="toggleChat()">×</button></div>
+  <div class="cb" id="cb"></div>
+  <div class="cq"><button onclick="ask('What is for lunch?')">🍛 Menu</button><button onclick="ask('How do I apply for leave?')">🧳 Leave</button><button onclick="ask('My status')">📊 Status</button></div>
+  <div class="ci"><input id="cin" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div>
+ </div>
+</div>
+
+<script>
+/* ---------- storage ---------- */
+var DB={complaints:[],leaves:[],notices:[],ratings:{},user:null,theme:'light'};
+function load(){try{var s=localStorage.getItem('hostelmate2');if(s)DB=Object.assign(DB,JSON.parse(s));}catch(e){}
+ if(!DB.notices.length)DB.notices=[{id:1,title:'Water maintenance',text:'Tomorrow · 10 AM–12 PM. Please store water in advance.',date:new Date().toLocaleDateString()}];
+ document.documentElement.setAttribute('data-theme',DB.theme||'light')}
+function save(){try{localStorage.setItem('hostelmate2',JSON.stringify(DB));}catch(e){}}
+function $(id){return document.getElementById(id)}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function uid(){return Date.now()+Math.floor(Math.random()*9999)}
+function toast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},2400)}
+function toggleTheme(){DB.theme=DB.theme==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',DB.theme);save()}
+
+/* ---------- data ---------- */
+var MENU={Breakfast:{e:'🥞',t:'Poha, boiled egg, tea · 7:30 AM'},Lunch:{e:'🍛',t:'Rice, dal tadka, paneer curry, salad · 12:30 PM'},Dinner:{e:'🥗',t:'Chapati, mixed veg, jeera rice, kheer · 8:00 PM'}};
+
+/* ---------- AI keyword logic ---------- */
+function classify(text){
+ var t=text.toLowerCase();
+ var cats=[
+  ['Connectivity',['wifi','wi-fi','internet','network','router','lan']],
+  ['Electrical',['light','fan','electric','switch','power','socket','bulb','heater']],
+  ['Plumbing',['water','tap','leak','toilet','flush','geyser','shower','drain','bathroom']],
+  ['Mess / Food',['food','mess','meal','breakfast','lunch','dinner','taste','menu']],
+  ['Cleanliness',['clean','dirty','garbage','dust','smell','sweep','pest','cockroach','mosquito']],
+  ['Security',['theft','stolen','lock','security','gate','fight','harass','unsafe','camera']],
+  ['Furniture',['bed','chair','table','cupboard','door','window','mattress','desk']]
+ ];
+ var cat='General';
+ for(var i=0;i<cats.length;i++){if(cats[i][1].some(function(k){return t.indexOf(k)>-1})){cat=cats[i][0];break}}
+ var high=['urgent','emergency','fire','shock','spark','flood','theft','stolen','harass','unsafe','no water','not working','broken','danger','injur','sick'];
+ var med=['leak','slow','dirty','noise','problem','issue','late','smell'];
+ var pr='Low';
+ if(cat==='Security'||high.some(function(k){return t.indexOf(k)>-1}))pr='High';
+ else if(med.some(function(k){return t.indexOf(k)>-1}))pr='Medium';
+ return {cat:cat,pr:pr};
+}
+
+/* ---------- landing ---------- */
+var role=null;
+function openLogin(){$('loginModal').classList.remove('hide');backPick()}
+function closeLogin(){$('loginModal').classList.add('hide')}
+function backPick(){$('pick').classList.remove('hide');$('form').classList.add('hide')}
+function pickRole(r){role=r;$('pick').classList.add('hide');$('form').classList.remove('hide');
+ $('ft').textContent=r==='student'?'🎓 Student login':'🛡️ Warden login';
+ $('rl').textContent=r==='student'?'Room number':'Hostel block';
+ $('lroom').placeholder=r==='student'?'e.g. B-204':'e.g. Block B'}
+function doLogin(){
+ var n=$('lname').value.trim(),i=$('lid').value.trim(),r=$('lroom').value.trim();
+ if(!n||!i){toast('⚠️ Please enter name and ID');return}
+ DB.user={role:role,name:n,id:i,room:r};save();closeLogin();showApp();toast('👋 Welcome, '+n.split(' ')[0]+'!');
+}
+function logout(){DB.user=null;save();$('app').classList.add('hide');$('landing').classList.remove('hide');$('chat').classList.add('hide');window.scrollTo(0,0);setTimeout(reveal,100)}
+
+/* ---------- app shell ---------- */
+var tab='home';
+var NAVS={
+ student:[['home','🏠','Dashboard'],['complaints','🛠️','Complaints'],['mess','🍛','Mess Menu'],['leave','🧳','Leave'],['notices','📢','Notices']],
+ warden:[['home','📊','Overview'],['complaints','🛠️','Complaints'],['leave','🧳','Leave'],['notices','📢','Announce'],['mess','🍛','Feedback']]
+};
+function showApp(){
+ $('landing').classList.add('hide');$('app').classList.remove('hide');
+ var u=DB.user;$('av').textContent=u.name.charAt(0).toUpperCase();$('mn').textContent=u.name;
+ $('mr').textContent=u.role==='student'?'Student · '+(u.room||'—'):'Warden · '+(u.room||'—');
+ tab='home';chatInit();render();
+}
+function go(t){tab=t;render();window.scrollTo(0,0)}
+function render(){
+ var s=DB.user.role==='student';var navs=NAVS[DB.user.role];
+ $('nav').innerHTML=navs.map(function(n){return '<button class="nv '+(n[0]===tab?'on':'')+'" onclick="go(\''+n[0]+'\')"><span>'+n[1]+'</span><b>'+n[2]+'</b></button>'}).join('');
+ var cur=navs.filter(function(n){return n[0]===tab})[0];
+ var h=new Date().getHours();var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+ $('pt').textContent=tab==='home'?g+', '+DB.user.name.split(' ')[0]+' 👋':cur[2];
+ $('ps').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+ var v=$('view');
+ if(s){v.innerHTML=({home:studentHome,complaints:studentComplaints,mess:messView,leave:studentLeave,notices:function(){return noticesView(false)}})[tab]()}
+ else{v.innerHTML=({home:wardenHome,complaints:wardenComplaints,leave:wardenLeave,notices:function(){return noticesView(true)},mess:feedbackView})[tab]()}
+ setTimeout(function(){document.querySelectorAll('.bf').forEach(function(b){b.style.width=b.getAttribute('data-w')+'%'})},60);
+}
+function mine(a){return a.filter(function(x){return x.sid===DB.user.id})}
+
+/* ---------- charts ---------- */
+function barChart(list){
+ if(!list.length)return '<div class="empty"><em>📊</em>No data yet</div>';
+ var c={};list.forEach(function(x){c[x.cat]=(c[x.cat]||0)+1});
+ var mx=Math.max.apply(null,Object.values(c));
+ return Object.keys(c).sort(function(a,b){return c[b]-c[a]}).map(function(k){
+  return '<div class="bar"><div class="bl"><span>'+k+'</span><span>'+c[k]+'</span></div><div class="bt"><div class="bf" data-w="'+(c[k]/mx*100)+'"></div></div></div>'}).join('');
+}
+function donut(list){
+ var n={High:0,Medium:0,Low:0};list.forEach(function(x){n[x.pr]++});var t=list.length;
+ if(!t)return '<div class="empty"><em>🍩</em>No complaints yet</div>';
+ var a=n.High/t*100,b=a+n.Medium/t*100;
+ return '<div class="donutwrap"><div class="donut" style="background:conic-gradient(#ef4444 0 '+a+'%,#f59e0b '+a+'% '+b+'%,#22c55e '+b+'% 100%)"><div>'+t+'</div></div><div class="leg"><div><i style="background:#ef4444"></i>High · '+n.High+'</div><div><i style="background:#f59e0b"></i>Medium · '+n.Medium+'</div><div><i style="background:#22c55e"></i>Low · '+n.Low+'</div></div></div>';
+}
+function noticeList(arr,del){
+ return arr.slice().reverse().map(function(n){return '<div class="item"><div class="row"><b>📢 '+esc(n.title)+'</b>'+(del?'<button class="btn bad sm" onclick="delNotice('+n.id+')">Delete</button>':'<small style="color:var(--mu)">'+n.date+'</small>')+'</div><p>'+esc(n.text)+'</p>'+(del?'<p>'+n.date+'</p>':'')+'</div>'}).join('')||'<div class="empty"><em>📭</em>No notices</div>';
+}
+
+/* ---------- student ---------- */
+function studentHome(){
+ var c=mine(DB.complaints),l=mine(DB.leaves);
+ return '<div class="cards">'+
+ sc('🛠️',c.length,'Total complaints')+sc('⏳',c.filter(function(x){return x.status!=='Resolved'}).length,'Unresolved')+sc('🧳',l.length,'Leave requests')+sc('📢',DB.notices.length,'Hostel notices')+'</div>'+
+ '<div class="eq"><div class="panel"><h3>Your complaints by category</h3>'+barChart(c)+'</div><div class="panel"><h3>Priority split</h3>'+donut(c)+'</div></div>'+
+ '<div class="panel"><h3>📢 Latest notice</h3>'+noticeList(DB.notices.slice(-1))+'</div>'+
+ '<div class="panel"><h3>⚡ Quick actions</h3><div class="row" style="justify-content:flex-start;gap:12px"><button class="btn sm" onclick="go(\'complaints\')">Report issue</button><button class="btn sm" onclick="go(\'leave\')">Request leave</button><button class="btn ghost sm" onclick="go(\'mess\')">Rate meals</button></div></div>';
+}
+function sc(i,n,l){return '<div class="sc"><div class="si">'+i+'</div><b>'+n+'</b><span>'+l+'</span></div>'}
+function studentComplaints(){
+ var list=mine(DB.complaints).slice().reverse().map(function(c){
+  return '<div class="item"><div class="row"><b>'+esc(c.title)+'</b><span><span class="badge '+c.pr+'">'+c.pr+'</span><span class="badge '+c.status+'">'+c.status+'</span></span></div><p>'+esc(c.text)+'</p><p>🤖 AI category: <b style="color:var(--p)">'+c.cat+'</b> · '+c.date+'</p></div>'}).join('')||'<div class="empty"><em>🎉</em>No complaints yet. All good!</div>';
+ return '<div class="two"><div class="panel"><h3>Report an issue</h3><div class="hint">✨ AI will auto-detect category & priority</div><label>Title</label><input id="ct" placeholder="Wi-Fi not working in Block B"><label>Details</label><textarea id="cd" rows="4" placeholder="Describe the problem..."></textarea><button class="btn" onclick="addComplaint()">Submit complaint →</button></div><div class="panel"><h3>Your complaints</h3>'+list+'</div></div>';
+}
+function addComplaint(){
+ var t=$('ct').value.trim(),d=$('cd').value.trim();
+ if(!t||!d){toast('⚠️ Fill title and details');return}
+ var r=classify(t+' '+d);
+ DB.complaints.push({id:uid(),sid:DB.user.id,sname:DB.user.name,room:DB.user.room,title:t,text:d,cat:r.cat,pr:r.pr,status:'Open',date:new Date().toLocaleDateString()});
+ save();toast('✨ AI sorted it: '+r.cat+' · '+r.pr);render();
+}
+function messView(){
+ if(DB.user.role==='warden')return feedbackView();
+ return '<div class="panel"><h3>🍽️ Today\'s menu</h3><div class="hint">⭐ Tap the stars to rate each meal</div>'+Object.keys(MENU).map(function(m){
+  var r=DB.ratings[m]||{sum:0,n:0};var mr=DB.ratings['u_'+DB.user.id+m]||0;
+  return '<div class="meal"><div class="me2">'+MENU[m].e+'</div><div class="mi"><b>'+m+'</b><p>'+MENU[m].t+'</p><small>Avg '+(r.n?(r.sum/r.n).toFixed(1):'–')+' ★ ('+r.n+' ratings)</small></div><div class="stars">'+[1,2,3,4,5].map(function(i){return '<button class="'+(i<=mr?'on':'')+'" onclick="rate(\''+m+'\','+i+')">★</button>'}).join('')+'</div></div>'}).join('')+'</div>';
+}
+function rate(m,v){
+ var r=DB.ratings[m]||{sum:0,n:0};var k='u_'+DB.user.id+m;var old=DB.ratings[k];
+ if(old){r.sum-=old}else{r.n++}
+ r.sum+=v;DB.ratings[m]=r;DB.ratings[k]=v;save();toast('⭐ Thanks for rating!');render();
+}
+function studentLeave(){
+ var list=mine(DB.leaves).slice().reverse().map(function(l){
+  return '<div class="item"><div class="row"><b>📅 '+l.from+' → '+l.to+'</b><span class="badge '+l.status+'">'+l.status+'</span></div><p>'+esc(l.reason)+'</p></div>'}).join('')||'<div class="empty"><em>🧳</em>No leave requests yet</div>';
+ return '<div class="two"><div class="panel"><h3>Request leave</h3><label>From</label><input type="date" id="lf"><label>To</label><input type="date" id="lt"><label>Reason</label><textarea id="lr" rows="3" placeholder="Going home for the weekend"></textarea><button class="btn" onclick="addLeave()">Send request →</button></div><div class="panel"><h3>Your requests</h3>'+list+'</div></div>';
+}
+function addLeave(){
+ var f=$('lf').value,t=$('lt').value,r=$('lr').value.trim();
+ if(!f||!t||!r){toast('⚠️ Fill all fields');return}
+ if(t<f){toast('⚠️ End date is before start');return}
+ DB.leaves.push({id:uid(),sid:DB.user.id,sname:DB.user.name,room:DB.user.room,from:f,to:t,reason:r,status:'Pending'});
+ save();toast('🧳 Leave request sent');render();
+}
+function noticesView(w){
+ if(!w)return '<div class="panel"><h3>📢 Hostel notices</h3>'+noticeList(DB.notices)+'</div>';
+ return '<div class="two"><div class="panel"><h3>Post announcement</h3><label>Title</label><input id="nt" placeholder="Water maintenance"><label>Message</label><textarea id="nm" rows="4" placeholder="Write the announcement..."></textarea><button class="btn" onclick="addNotice()">Publish →</button></div><div class="panel"><h3>Published</h3>'+noticeList(DB.notices,true)+'</div></div>';
+}
+function addNotice(){
+ var t=$('nt').value.trim(),m=$('nm').value.trim();
+ if(!t||!m){toast('⚠️ Fill both fields');return}
+ DB.notices.push({id:uid(),title:t,text:m,date:new Date().toLocaleDateString()});save();toast('📢 Published');render();
+}
+function delNotice(id){DB.notices=DB.notices.filter(function(n){return n.id!==id});save();render()}
+
+/* ---------- warden ---------- */
+function wardenHome(){
+ var c=DB.complaints,l=DB.leaves;
+ return '<div class="cards">'+
+ sc('📬',c.filter(function(x){return x.status==='Open'}).length,'Open complaints')+
+ sc('🚨',c.filter(function(x){return x.pr==='High'&&x.status!=='Resolved'}).length,'High priority')+
+ sc('⏳',l.filter(function(x){return x.status==='Pending'}).length,'Pending leaves')+
+ sc('✅',c.filter(function(x){return x.status==='Resolved'}).length,'Resolved')+'</div>'+
+ (c.length?'':'<div class="panel"><div class="empty"><em>🗂️</em>No data yet.<br><br><button class="btn sm" onclick="seed()">✨ Load sample data</button></div></div>')+
+ '<div class="eq"><div class="panel"><h3>Complaints by category</h3>'+barChart(c)+'</div><div class="panel"><h3>Priority overview</h3>'+donut(c)+'</div></div>';
+}
+function seed(){
+ var S=[['Wi-Fi not working','Internet is down in Block B since morning, urgent','Aarav','B-204'],['Leaking tap','Bathroom tap is leaking water','Meera','C-110'],['Fan noise','Ceiling fan makes a loud noise','Rohan','A-305'],['Mess food taste','Dinner food quality was poor','Isha','B-101'],['Broken window lock','Window lock is broken, feels unsafe','Kabir','A-212']];
+ S.forEach(function(s){var r=classify(s[0]+' '+s[1]);DB.complaints.push({id:uid(),sid:'demo'+s[2],sname:s[2],room:s[3],title:s[0],text:s[1],cat:r.cat,pr:r.pr,status:'Open',date:new Date().toLocaleDateString()})});
+ DB.leaves.push({id:uid(),sid:'demoAarav',sname:'Aarav',room:'B-204',from:'2026-12-05',to:'2026-12-08',reason:'Family function',status:'Pending'});
+ save();toast('✨ Sample data loaded');render();
+}
+function wardenComplaints(){
+ var o={High:0,Medium:1,Low:2};var a=DB.complaints.slice().sort(function(x,y){return o[x.pr]-o[y.pr]});
+ if(!a.length)return '<div class="panel"><div class="empty"><em>🎉</em>No complaints submitted</div></div>';
+ return '<div class="panel"><h3>All complaints · sorted by AI priority</h3>'+a.map(function(c){
+  return '<div class="item"><div class="row"><b>'+esc(c.title)+'</b><span><span class="badge '+c.pr+'">'+c.pr+'</span><span class="badge '+c.status.replace(' ','\\ ')+'">'+c.status+'</span></span></div><p>'+esc(c.text)+'</p><p>👤 '+esc(c.sname)+' · Room '+esc(c.room||'—')+' · 🤖 '+c.cat+'</p><div style="margin-top:10px"><select style="width:auto;margin:0" onchange="setStatus('+c.id+',this.value)">'+['Open','In Progress','Resolved'].map(function(s){return '<option '+(s===c.status?'selected':'')+'>'+s+'</option>'}).join('')+'</select></div></div>'}).join('')+'</div>';
+}
+function setStatus(id,s){DB.complaints.forEach(function(c){if(c.id===id)c.status=s});save();toast('✅ Status updated');render()}
+function wardenLeave(){
+ if(!DB.leaves.length)return '<div class="panel"><div class="empty"><em>🧳</em>No leave requests</div></div>';
+ return '<div class="panel"><h3>Leave requests</h3>'+DB.leaves.slice().reverse().map(function(l){
+  return '<div class="item"><div class="row"><b>'+esc(l.sname)+' · Room '+esc(l.room||'—')+'</b><span class="badge '+l.status+'">'+l.status+'</span></div><p>📅 '+l.from+' → '+l.to+'</p><p>'+esc(l.reason)+'</p>'+(l.status==='Pending'?'<div style="margin-top:10px;display:flex;gap:8px"><button class="btn ok sm" onclick="leaveSet('+l.id+',\'Approved\')">Approve</button><button class="btn bad sm" onclick="leaveSet('+l.id+',\'Rejected\')">Reject</button></div>':'')+'</div>'}).join('')+'</div>';
+}
+function leaveSet(id,s){DB.leaves.forEach(function(l){if(l.id===id)l.status=s});save();toast('Leave '+s.toLowerCase());render()}
+function feedbackView(){
+ return '<div class="panel"><h3>🍽️ Mess feedback</h3>'+Object.keys(MENU).map(function(m){
+  var r=DB.ratings[m]||{sum:0,n:0};var a=r.n?(r.sum/r.n):0;
+  return '<div class="meal"><div class="me2">'+MENU[m].e+'</div><div class="mi"><b>'+m+'</b><p>'+r.n+' ratings</p><div class="bar" style="margin:8px 0 0"><div class="bt"><div class="bf" data-w="'+(a/5*100)+'"></div></div></div></div><b style="font-size:26px">'+(r.n?a.toFixed(1)+' ★':'–')+'</b></div>'}).join('')+'</div>';
+}
+
+/* ---------- chat assistant ---------- */
+function chatInit(){$('cb').innerHTML='';addMsg('bot','Hi '+DB.user.name.split(' ')[0]+'! 👋 I\'m your HostelMate assistant. Ask about the menu, leave, complaints or your status.')}
+function toggleChat(){$('chat').classList.toggle('hide')}
+function addMsg(w,t){var d=document.createElement('div');d.className='m '+w;d.textContent=t;$('cb').appendChild(d);$('cb').scrollTop=99999}
+function ask(q){$('chat').classList.remove('hide');addMsg('me',q);setTimeout(function(){addMsg('bot',reply(q))},450)}
+function sendChat(){var v=$('cin').value.trim();if(!v)return;$('cin').value='';ask(v)}
+function reply(q){
+ q=q.toLowerCase();var u=DB.user;
+ if(/menu|lunch|dinner|breakfast|food|eat/.test(q))return '🍽️ Today\'s menu:\n🥞 Breakfast: '+MENU.Breakfast.t+'\n🍛 Lunch: '+MENU.Lunch.t+'\n🥗 Dinner: '+MENU.Dinner.t;
+ if(/leave|home|trip/.test(q))return u.role==='student'?'🧳 Go to the Leave tab, choose dates, add a reason and send. You can track approval there.':'🧳 Open the Leave tab to approve or reject pending requests.';
+ if(/status|my |pending|how many/.test(q)){
+  if(u.role==='student'){var c=mine(DB.complaints),l=mine(DB.leaves);return '📊 You have '+c.length+' complaint(s) ('+c.filter(function(x){return x.status!=='Resolved'}).length+' unresolved) and '+l.length+' leave request(s) ('+l.filter(function(x){return x.status==='Pending'}).length+' pending).'}
+  return '📊 '+DB.complaints.filter(function(x){return x.status==='Open'}).length+' open complaints, '+DB.leaves.filter(function(x){return x.status==='Pending'}).length+' pending leaves.';
+ }
+ if(/complain|issue|problem|report|broken|wifi|water|fan/.test(q)){var r=classify(q);return '🤖 That looks like a "'+r.cat+'" issue with '+r.pr+' priority. '+(u.role==='student'?'Open the Complaints tab to submit it.':'Check the Complaints tab to manage it.')}
+ if(/notice|announce/.test(q))return '📢 Latest: '+DB.notices[DB.notices.length-1].title+' — '+DB.notices[DB.notices.length-1].text;
+ if(/hi|hello|hey/.test(q))return 'Hello! 😊 How can I help you today?';
+ return '🤔 I can help with: menu, leave, complaints, notices and your status. Try asking one of those!';
+}
+
+/* ---------- reveal + counters ---------- */
+function reveal(){
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);
+  e.target.querySelectorAll('[data-c]').forEach(count)}})},{threshold:.15});
+ document.querySelectorAll('.rv:not(.in)').forEach(function(el){io.observe(el)});
+}
+function count(el){
+ var end=parseFloat(el.dataset.c),s=el.dataset.s||'',dec=end%1?1:0,t0=null;
+ function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/1400,1);el.textContent=(end*(1-Math.pow(1-p,3))).toFixed(dec)+s;if(p<1)requestAnimationFrame(step)}
+ requestAnimationFrame(step);
+}
+
+/* ---------- init ---------- */
+load();reveal();
+if(DB.user)showApp();
+</script>
+</body>
+</html>
